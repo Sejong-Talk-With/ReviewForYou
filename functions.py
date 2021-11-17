@@ -7,7 +7,7 @@ from multiprocessing import Pool
 from functools import partial
 import pandas as pd
 import numpy as np
-from eunjeon import Mecab
+from konlpy.tag import Mecab
 import gensim
 from sklearn.metrics.pairwise import cosine_similarity
 from collections import defaultdict
