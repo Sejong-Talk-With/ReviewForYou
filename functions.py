@@ -532,7 +532,7 @@ def lets_do_crawling(site, product_num, url_src=None):
 
         pool = Pool(8)
         func = partial(Crawling_11st, product_num)
-        tem = pool.map(func, range(1, 71))
+        tem = pool.map(func, range(1, 51))
         pool.close()
         pool.join()
 
@@ -571,7 +571,7 @@ def lets_do_crawling(site, product_num, url_src=None):
 
         pool = Pool(8)
         func = partial(Crawling_Naver, product_num, merchant_num, store)
-        tem = pool.map(func, range(1, 71))
+        tem = pool.map(func, range(1, 51))
         pool.close()
         pool.join()
 
