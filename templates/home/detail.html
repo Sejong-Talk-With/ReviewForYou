@@ -1,0 +1,205 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>review_detail</title>
+    <link rel="stylesheet" href="{% static '/main.css' %}">
+    <link rel="stylesheet" href="{% static '/detail.css' %}">
+    <link rel="stylesheet" href="{% static '/modal.css' %}">
+</head>
+<body>
+{% include 'home/main.html' %}
+{% block content %}
+
+<div class='detail_out' onclick="remove_detail()"></div>
+
+<div class='detail'>
+
+    <div class='modal_head row_side col'>
+        <div class="row">
+            <p class='modal_item_name'><a href="/modal/{{ click_Product.id }}/">{{ click_Product.product_name }}</a></p>
+            <div class="modal_item_star star-ratings"><div style="width : calc(15*{{ click_Product.total_value }}px)" id='item_star' class="star-ratings-fill space-x-2 text-lg"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div><div class="star-ratings-base space-x-2 text-lg"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div></div>
+            <div class='modal_item_score'>{{ click_Product.total_value }}</div>
+            <div class='modal_item_ratio'>긍정비율 {{ click_Product.pos_neg_rate }}%</div>
+        </div>
+        <div><a href = "/trend/{{click_Product.id}}/"><div class='modal_item_trend col row'><button class='trend_button'>TREND</button></div></a></div>
+    </div>
+
+    <div class='row detail_main'>
+        <div class='detail_text'>
+            {% for line,original in result %}
+                <form name={{ forloop.counter }} action="/review/{{click_review.id}}/"
+                      method="post" style="margin: 0; padding: 0; display: inline">
+                    {% csrf_token %}
+                    <span class="sss_review"
+                         onclick="document.forms[{{ forloop.counter }}].submit();"
+                         style="display: inline">
+                        <input type="hidden" name='review' value='{{ original }}'>
+                        {% for word,value in line %}
+                        {% if value >= 0.7 %}
+                        <h5 class="mt-0"
+                            style="display:inline; color: #45892C;" >{{ word }}</h5>
+                        {% elif value <= -0.7 %}
+                        <h5 class="mt-0"
+                            style="display:inline; color: #AD2525; " >{{ word }}</h5>
+                        {% else %}
+                        <h5 class="mt-0" style="display:inline">{{ word }}</h5>
+                        {% endif %}
+                        {% endfor %}
+                    </span>
+                </form>
+                {% endfor %}
+            <div class='detail_sub_text row_left col'>
+                <div class="star-ratings"><div id='item_star' class="star-ratings-fill space-x-2 text-lg"style="width : calc(15*{{ click_review.score }}px)"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div><div class="star-ratings-base space-x-2 text-lg"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div></div>
+                <div class="detail_text_score">{{ click_review.score }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class='detail_review row_left'>
+        <div class='detail_review_box'>
+            <div class='detail_a1'>
+                <div class='a3_text1'>상세 분석</div>
+                <div class='a3_text2'>문장 분석 및 상품입니다</div>
+                <div class='detail_a1_box'>
+                    {% for word,val in click_review_keywords %}
+                    <div class='detail_a1_content row_left col'>
+                        <div class='detail_a1_keyword'>{{ word }}</div>
+                        {% if val <= 35 %}
+                        <div class='a1_bar'><div class='a1_green_bar' style="background-color: #AD2525;"><div class='a1_white_bar' style="width : calc(240px - 2.4*{{ val }}px ); "></div></div></div>
+                        {% elif val <= 60 %}
+                        <div class='a1_bar'><div class='a1_green_bar' style="background-color: #AD801D; "><div class='a1_white_bar' style="width : calc(240px - 2.4*{{ val }}px );  )"></div></div></div>
+                        {% else %}
+                        <div class='a1_bar'><div class='a1_green_bar' style="background-color: #45892C; "><div class='a1_white_bar' style="width : calc(240px - 2.4*{{ val }}px ); )"></div></div></div>
+                        {% endif %}
+
+                        <div class='detail_a1_ratio'>{{val}}%</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class='detail_a3'>
+                <div class='a3_text1'>유사 리뷰</div>
+                <div class='a3_text2'>선택된 리뷰와 유사한 리뷰들을 출력합니다</div>
+                <div class='detail_a3_box'>
+                    {% for sim_review in similar_review %}
+                    <div class='detail_a3_content row_left col'>
+                        <div class='detail_a3_keyword'>
+                            {% for word,flag in sim_review %}
+                                {% if flag == 1 %}
+                                <h5 class="mt-0 h1"
+                                    style="display: inline;" >{{ word }}</h5>
+                                {% else %}
+                                <h5 class="mt-0" style="display: inline;">{{ word }}</h5>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+        </div>
+
+        <div div class='detail_review_box'>
+
+            <div class='detail_a2'>
+                <div class='a3_text1'>XAI</div>
+                <div class='a3_text2'>XAI를 바탕으로 분석된 결과입니다</div>
+                <div class="xai">
+                    <div class='detail_a2_box'>
+                        {% for word,value in sen_xai %}
+                            {% if value >= 0.7 %}
+                                <div class="xai_text">
+                                    <div><h5 class="mt-0" style="display:inline; color: #45892C">{{ word }}</h5></div>
+                                    <div class="row"><h5 class="mt-1" style="display:inline; color: #45892C">{{ value }}</h5></div>
+                                </div>
+
+                                {% elif value <= -0.7 %}
+                                <div class="xai_text">
+                                    <div><h5 class="mt-0" style="display:inline; color: #AD2525">{{ word }}</h5></div>
+                                    <div class="row"><h5 class="mt-1" style="display:inline; color: #AD2525">{{ value }}</h5></div>
+                                </div>
+                                {% else %}
+                                <div class="xai_text">
+                                    <div><h5 class="mt-0" style="display:inline">{{ word }}</h5></div>
+                                    <div class="row"><h5 class="mt-1" style="display:inline">{{ value }}</h5></div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class='detail_a4'>
+                <div class='a3_text1'>유사 리뷰 비율</div>
+                <div class='a3_text2'>유사 리뷰의 유사도를 출력합니다</div>
+                <div class='detail_a4_box'>
+                    <div class="'chart-box row" onclick="draw({{similar_rate}}+1, '.pie-chart1', '#45892C')">
+                        <div class="pie-chart pie-chart1"><span class="center">{{ similar_rate }}%</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class='a3'>
+        <div class='a3_text1'>상품 추천</div>
+        <div class='a3_text2'>선택한 리뷰를 바탕으로 추천된 상품입니다</div>
+
+        <div class='row'>
+            <div class='recommend_img_box row'>
+                {% for model,keywords in recom_model %}
+                    <a class='recommend_img' href="/modal/{{ model.id }}/"
+                       style="text-decoration: none; color:black;"><p
+                            class='recommend_img_title'>{{ model.product_name }}</p><img
+                            src="{{ model.img_src }}" class='r_img1'
+                            style='border-radius: 15px 15px 15px 15px;'>
+                        <div class="preview_box row">
+                            <div>
+                        {% for word, rate in keywords %}
+                            <div class="preview_text">{{ word }} : {{ rate }}%</div>
+                            {% if rate <= 35 %}
+                            <div class='a1_bar'><div class='a1_green_bar' style="background-color: #AD2525; height: 14px"><div class='a1_white_bar' style="width : calc(240px - 2.4*{{ rate }}px ); height: 14px;"></div></div></div>
+                            {% elif rate <= 60 %}
+                            <div class='a1_bar'><div class='a1_green_bar' style="background-color: #AD801D; height: 14px"><div class='a1_white_bar' style="width : calc(240px - 2.4*{{ rate }}px );  height: 14px;)"></div></div></div>
+                            {% else %}
+                            <div class='a1_bar'><div class='a1_green_bar' style="background-color: #45892C; height: 14px"><div class='a1_white_bar' style="width : calc(240px - 2.4*{{ rate }}px ); height: 14px;)"></div></div></div>
+                            {% endif %}
+                        {% endfor %}
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+max_value = 50;
+draw({{similar_rate}}+1, '.pie-chart1', '#45892C');
+ function draw(max, classname, colorname){
+    var i=1;
+     var func1 = setInterval(function(){
+       if(i<max){
+           color1(i,classname,colorname);
+           i++;
+       } else{
+         clearInterval(func1);
+       }
+     },10);
+ }
+{% endblock %}
+
+</script>
+<script src="{% static '/main.js' %}"></script>
+
+</body>
+
+</html>

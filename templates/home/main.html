@@ -1,0 +1,183 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>main</title>
+    <link rel="stylesheet" href="{% static '/main.css' %}">
+    <link rel="stylesheet" href="{% static '/detail.css' %}">
+    <link rel="stylesheet" href="{% static '/trend.css' %}">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> <!--제이쿼리-->
+
+    <!--폰트-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Hahmlet:wght@500&family=Yeon+Sung&display=swap"rel="stylesheet">
+
+</head>
+<body>
+{% block content %}
+
+{% if first %}
+<div class='background'></div>
+<div class='main_title row'><div class='title'><a href="/home">Review For You</a></div></div>
+
+<div class='top row_side col'>
+    <div class="row">
+        <div class='title_box'><a href="/home">Review For You</a></div>
+        <div class='search_box'>
+            <form action="/home/url_search/" method="POST" class='row'>
+                {% csrf_token %}
+                <input class='search' name="url_src" placeholder="카테고리 혹은 URL을 입력해주세요">
+                <button type="submit" class="btn btn-primary"onKeypress="javascript:if(event.keyCode==13) {search_onclick_submit}"></button>
+            </form>
+        </div>
+    </div>
+    <div class="icons row">
+        <div class="icon"><a href="https://www.11st.co.kr/" target="_blank"><img src="{% static '/image/11번가.png' %}" style="width: 40px; height: 40px"></a></div>
+        <div class="icon"><a href="https://shopping.naver.com/style/style/home" target="_blank"><img src="{% static '/image/네이버.png' %}" style="width: 40px; height: 40px"></a></div>
+    </div>
+</div>
+
+<div class='bot'>
+    <div class='TOP row_left'>TOP</div>
+    <div class="slide">
+        <input type="radio" name="pos" id="pos1" checked>
+        <input type="radio" name="pos" id="pos2">
+        <input type="radio" name="pos" id="pos3">
+        <input type="radio" name="pos" id="pos4">
+        <ul>
+            {% for temp_product in TOP_Products %}
+            <li class='row'>
+                {% for ul in temp_product %}
+                    <div class='item_box'><a href="/modal/{{ ul.id }}/"><img src='{{ ul.img_src }}' class='item'></a></div>
+                {% endfor %}
+            </li>
+            {% endfor %}
+        </ul>
+        <p class="bullet">
+            <label for="pos1">1</label>
+            <label for="pos2">2</label>
+            <label for="pos3">3</label>
+            <label for="pos4">4</label>
+        </p>
+    </div>
+
+    <div class='RECENT row_left'>RECENT</div>
+    <div class="slide">
+        <input type="radio" name="posa" id="pos1a" checked>
+        <input type="radio" name="posa" id="pos2a">
+        <input type="radio" name="posa" id="pos3a">
+        <input type="radio" name="posa" id="pos4a">
+        <ul>
+            {% for temp_product in RECENT_Products %}
+            <li class='row'>
+                {% for ul in temp_product %}
+                    <div class='item_box'><a href="/modal/{{ ul.id }}/"><img src='{{ ul.img_src }}' class='item'></a></div>
+                {% endfor %}
+            </li>
+            {% endfor %}
+        </ul>
+        <p class="bullet">
+            <label for="pos1a">1</label>
+            <label for="pos2a">2</label>
+            <label for="pos3a">3</label>
+            <label for="pos4a">4</label>
+        </p>
+    </div>
+</div>
+
+
+{% else %}
+<div class='background'></div>
+
+<div class='top2 row_side col'>
+    <div class="row">
+        <div class='title_box'><a href="/home">Review For You</a></div>
+        <div class='search_box'>
+            <form action="/home/url_search/" method="POST" class='row'>
+                {% csrf_token %}
+                <input class='search' name="url_src" placeholder="카테고리 혹은 URL을 입력해주세요">
+                <button type="submit" class="btn btn-primary"onKeypress="javascript:if(event.keyCode==13) {search_onclick_submit}"></button>
+            </form>
+        </div>
+    </div>
+    <div class="icons row">
+        <div class="icon"><a href="https://www.11st.co.kr/" target="_blank"><img src="{% static '/image/11번가.png' %}" style="width: 40px; height: 40px"></a></div>
+        <div class="icon"><a href="https://shopping.naver.com/style/style/home" target="_blank"><img src="{% static '/image/네이버.png' %}" style="width: 40px; height: 40px"></a></div>
+    </div>
+</div>
+
+<div class='bot2'>
+    <div class='TOP row_left'>TOP</div>
+    <div class="slide">
+        <input type="radio" name="pos" id="pos1" checked>
+        <input type="radio" name="pos" id="pos2">
+        <input type="radio" name="pos" id="pos3">
+        <input type="radio" name="pos" id="pos4">
+        <ul>
+            {% for temp_product in TOP_Products %}
+            <li class='row'>
+                {% for ul in temp_product %}
+                    <div class='item_box'><a href="/modal/{{ ul.id }}/"><img src='{{ ul.img_src }}' class='item'></a></div>
+                {% endfor %}
+            </li>
+            {% endfor %}
+        </ul>
+        <p class="bullet">
+            <label for="pos1">1</label>
+            <label for="pos2">2</label>
+            <label for="pos3">3</label>
+            <label for="pos4">4</label>
+        </p>
+    </div>
+
+    <div class='RECENT row_left'>RECENT</div>
+    <div class="slide">
+        <input type="radio" name="posa" id="pos1a" checked>
+        <input type="radio" name="posa" id="pos2a">
+        <input type="radio" name="posa" id="pos3a">
+        <input type="radio" name="posa" id="pos4a">
+        <ul>
+            {% for temp_product in RECENT_Products %}
+            <li class='row'>
+                {% for ul in temp_product %}
+                    <div class='item_box'><a href="/modal/{{ ul.id }}/"><img src='{{ ul.img_src }}' class='item'></a></div>
+{#                    <div>#}
+{#                        <a href="/home/delete/{{ ul.id }}">#}
+{#                            <span class="badge rounded-pill bg-danger">삭제</span>#}
+{#                        </a>#}
+{#                    </div>#}
+                {% endfor %}
+            </li>
+            {% endfor %}
+        </ul>
+        <p class="bullet">
+            <label for="pos1a">1</label>
+            <label for="pos2a">2</label>
+            <label for="pos3a">3</label>
+            <label for="pos4a">4</label>
+        </p>
+    </div>
+</div>
+
+{% endif %}
+
+<script src="{% static '/main.js' %}"></script>
+
+{#<script type="text/javascript">#}
+{#    $(document).ready(function(){#}
+{#       $("#MODAL").load("./modal.html")#}
+{#    });#}
+{#    $(document).ready(function(){#}
+{#       $("#DETAIL").load("./detail.html")#}
+{#    });#}
+{#    $(document).ready(function(){#}
+{#       $("#TREND").load("./trend.html")#}
+{#    });#}
+{#</script>#}
+{% endblock %}
+</body>
+</html>

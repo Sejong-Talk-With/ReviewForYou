@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>main</title>
+    <link rel="stylesheet" href="{% static '/main.css' %}">
+    <link rel="stylesheet" href="{% static '/detail2.css' %}">
+    <link rel="stylesheet" href="{% static '/trend.css' %}">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    <!--í°í¸-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Hahmlet:wght@500&family=Yeon+Sung&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    {% block content %}
+    <div class='main_top'>
+        <img class='main_img' src="{% static '/image/main2.jpg' %}">
+        <div class='main_box'>
+            <a href="/home"><div class='main_title row'>Review Analysis</div></a>
+            <form action="/home/url_search/" method="POST" class='row main_search_box'>
+                {% csrf_token %}
+                <div>
+                    <input class='main_search' name="url_src" placeholder="카테고리 혹은 URL을 입력해주세요">
+                </div>
+                <button type="submit" class="btn btn-primary" onKeypress="javascript:if(event.keyCode==13) {search_onclick_submit}"><img src="{% static '/image/search.png' %}" class='search_img' width="20px" height="20px"></button>
+            </form>
+        </div>
+    </div>
+
+    <div class='main_bot'>
+        <div class='top'>TOP</div>
+        <div class='wrap_top row col'>
+            <div class='slide_left' onclick="move_slide(1)"></div>
+            <ul>
+                <li>
+                    {% for ul in TOP_Products %}
+                    <a href="/modal/{{ ul.id }}/">
+                        <div id='slide_top_box1' class='wrap_box' style='background-color: red;'><img
+                                class='slide_img' id='slide_top_box1_img' src="{{ ul.img_src }}">
+                            <div>
+                                <a href="/home/delete/{{ ul.id }}">
+                                    <span class="badge rounded-pill bg-danger">삭제</span>
+                                </a>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </li>
+            </ul>
+            <div class='slide_right' onclick="move_slide(2)"></div>
+        </div>
+        <div class='recent'>Recent</div>
+        <div class='wrap_recent row col'>
+            <div class='slide_left' onclick="move_slide(3)"></div>
+            <ul>
+                <li>
+                    {% for ul in RECENT_Products %}
+                    <a href="/modal/{{ ul.id }}/">
+                        <div id='slide_top_box1' class='wrap_box' style='background-color: red;'><img
+                                class='slide_img' id='slide_top_box1_img' src="{{ ul.img_src }}">
+                            <div>
+                                <a href="/home/delete/{{ ul.id }}">
+                                    <span class="badge rounded-pill bg-danger">삭제</span>
+                                </a>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </li>
+            </ul>
+            <div class='slide_right' onclick="move_slide(4)"></div>
+        </div>
+    </div>
+    <script src="{% static '/main.js' %}"></script>
+    {% endblock %}
+</body>
+</html>

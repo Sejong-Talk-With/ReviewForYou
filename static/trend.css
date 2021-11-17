@@ -1,0 +1,63 @@
+/*trend */
+
+.trend {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1300px;
+  height: 90vh;
+  background-color: #181818;
+  z-index: 6;
+  display: block;
+  overflow-y: auto;
+  overflow-x: hidden;
+  opacity: 0.9;
+}
+
+.trend::-webkit-scrollbar {
+  display: none;
+}
+
+.trend_out {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+  opacity: 0.9;
+  display: block;
+  z-index: 5;
+}
+
+.trend_item_name {
+  color: white;
+  font-weight: bold;
+  opacity: 1 !important;
+  font-size: 3.5rem;
+  margin: 50px 0px 0px 50px;
+}
+
+.data1_title,
+.data2_title,
+.data3_title {
+  color: white;
+  font-size: 2rem;
+  margin: 50px 0px 0px 50px;
+  font-weight: bold;
+}
+
+.trend_sub_title {
+  color: gray;
+  font-size: 1.5rem;
+  margin: 5px 0px 25px 50px;
+}
+
+.data1:hover,
+.data2:hover,
+.data3:hover {
+  transform: scale(1.05, 1.05);
+  transition-duration: 0.5s;
+}
