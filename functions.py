@@ -14,9 +14,9 @@ from collections import defaultdict
 
 mecab = Mecab()
 word2vec_model = gensim.models.Word2Vec.load('word2vec_by_mecab.model')
-containers = ['NNG', 'NNP', 'NNB', 'NNBC', 'NR', 'NP', 'VV', 'VA', 'VX', 'VCP', 'VCN', 'MM']
-stop_words = ['JKC', 'JKG', 'JKO', 'JKB', 'JKV', 'JKQ', 'JX', 'JC']
-useless_NNG = ['만족', '구입', '구매', '생각', '때', '주문', '정도', '느낌', '맘', '마음', '상품', '제품', '물건']
+containers = set(['NNG', 'NNP', 'NNB', 'NNBC', 'NR', 'NP', 'VV', 'VA', 'VX', 'VCP', 'VCN', 'MM'])
+stop_words = set(['JKC', 'JKG', 'JKO', 'JKB', 'JKV', 'JKQ', 'JX', 'JC'])
+useless_NNG = set(['만족', '구입', '구매', '생각', '때', '주문', '정도', '느낌', '맘', '마음', '상품', '제품', '물건'])
 con = pd.read_csv("word_vector.csv", usecols=['0', 'total_value'])
 word_index = set(con['0'].to_list())
 con = np.array(con)
@@ -30,13 +30,11 @@ headers = {
 def make_score(x):
     return 0 if x < -2.16 else (1 if x >= 1.84 else (x + 0.16) / 4 + 0.5)
 
-
 def DNN_func(sentence):
     after_preprocess = re.sub(r" {2,}", " ", hangul.sub(' ', sentence)).strip()
     tmp = [text[0] for text in mecab.pos(after_preprocess) if
            text[1][0] != 'E' and text[1][0] != 'S' and (text[1] == 'XR' or text[1][0] != 'X') and text[1][0] != 'J' and
-           text[
-               1] != 'UNKNOWN' and text[0] != '.' and text[0] != '옷']
+           text[1] != 'UNKNOWN' and text[0] != '.']
     value = [float(con[con[:, 0] == word, 1]) if word in word_index else 0 for word in tmp]
     value = value[:20] if len(value) >= 20 else np.pad(value, (0, 20 - len(value)), 'constant')
 
@@ -58,8 +56,7 @@ def DNN_func(sentence):
         values.append(round(value_tmp, 3))
 
     if len(values) < 3:
-        tmp = [max(values) for i in range(len(values))] if max(values) > min(values) * -1 else [min(values) for i in
-                                                                                                range(len(values))]
+        tmp = [max(values) for i in range(len(values))] if max(values) > min(values) * -1 else [min(values) for i in range(len(values))]
         return before_text, [*map(lambda x, y: round((x + y) / 2, 2), tmp, values)]
 
     tmp = []
@@ -104,8 +101,10 @@ def Crawling_11st(product_num, pageNo):
 
                 for sen in sss(review):
                     before_text, value = DNN_func(sen)
-                    xai_before_text.extend(before_text)
-                    xai_value.extend(value)
+                    xai_before_text += before_text
+                    # xai_before_text.extend(before_text)
+                    xai_value += value
+                    # xai_value.extend(value)
                 temp.append([date, review, xai_before_text, xai_value,
                              round(make_score(sum(xai_value) / len(xai_value)) * 10, 1)])
         return temp
@@ -146,8 +145,10 @@ def Crawling_Naver(product_num, merchant_num, store, pageNo):
                 xai_value = []
                 for sen in sss(review):
                     before_text, value = DNN_func(sen)
-                    xai_before_text.extend(before_text)
-                    xai_value.extend(value)
+                    xai_before_text += before_text
+                    # xai_before_text.extend(before_text)
+                    xai_value += value
+                    # xai_value.extend(value)
                 temp.append([date, review, xai_before_text, xai_value,
                              round(make_score(sum(xai_value) / len(xai_value)) * 10, 1)])
         return temp
@@ -158,11 +159,10 @@ def Crawling_Naver(product_num, merchant_num, store, pageNo):
                 ['2018.02.27', '좋아요', ['좋아요'], [1.76], 9.1899])
         return temp
 
-
 def sss(text):
     text = re.sub(r" {2,}", " ", hangul.sub(' ', text))
-    end_char = ['요', '다', '죠']
-    avoid_char = ['보다', '하려다', '하다', '려다']
+    end_char = set(['요', '다', '죠'])
+    avoid_char = set(['보다', '하려다', '하다', '려다'])
     special_char = ['느림']
     new_sentences = []
     ts = text.split()
@@ -197,12 +197,6 @@ def change_name(tt):
             result_text = result_text + ' ' + i
     result_text = re.sub('[^0-9a-zA-Z가-힣\s]', '', result_text).strip()
     return result_text
-
-
-def text_to_pandas(text):
-    data = pd.DataFrame(text, columns=['score', 'review'])
-    data = data.drop_duplicates(ignore_index=False).reset_index(drop=True)
-    return data
 
 # 분석과정
 def preprocessing(review_data):
@@ -255,13 +249,6 @@ def count_noun(nouns):
     vocab_sorted = sorted(vocab.items(), key=lambda x: x[1], reverse=True)[:30]
     return vocab_sorted
 
-
-def check_vocab(t, review_data_list):
-    t.fit_on_texts(review_data_list)
-    vocab_size = len(t.word_index) + 1
-    return vocab_size
-
-
 def get_vector(word):
     if word in word2vec_model:
         return word2vec_model[word]
@@ -270,7 +257,6 @@ def get_vector(word):
 
 
 def return_keyword(review_data):
-    # review_data = pd.DataFrame(review_data, columns=['review']).reset_index(drop=True)
     review_data_list = morphs_pos(review_data)  # 형태소 토큰화
     nouns = return_nouns(review_data)  # 명사 추출
     check_vocab = count_noun(nouns)  # 명사 키워드
@@ -287,15 +273,6 @@ def return_keyword(review_data):
 
     word_josa_count = sorted(word_next_josa.items(), key=lambda x: x[1], reverse=True)[:20]  # count를 기준으로 sort 20개
     keyword_before = [w for w,v in word_josa_count if v > 1]
-    # for i in range(len(word_josa_count)):
-    #     for j in range(len(check_vocab)):
-    #         if word_josa_count[i][0] == check_vocab[j][0] and word_josa_count[i][
-    #             1] > 1:  # 그냥 가장 많이 나온 단어들과 다음 단어가 조사가 나오는 단어들 중 을 선택
-    #             keyword_before.append(word_josa_count[i][0])
-
-    # 유사어 처리 및 불용어 처리(상품명, 제품, 상품,. ...)
-    # 네이버 리뷰 20만개로 학습한 word2vec모델 load
-
     similar_word = []
     keyword = []
     for key in keyword_before:
@@ -307,7 +284,6 @@ def return_keyword(review_data):
                 similar_word.extend(r)
             except KeyError as e:
                 pass
-
     return keyword, check_vocab
 
 
@@ -316,7 +292,7 @@ def vectors(sentence):
     doc2vec = None
     count = 0
     for word in sentence:
-        if word in list(word2vec_model.wv.index_to_key):
+        if word in set(word2vec_model.wv.index_to_key):
             count += 1
             # 해당 문서에 있는 모든 단어들의 벡터값을 더한다.
             if doc2vec is None:
@@ -344,11 +320,12 @@ def review_summarization(data):
     data = preprocessing(data)
     keyword, vocab_sorted = return_keyword(data)
     review_data = []
-    for j in range(len(data)):
-        for sentence in sss(data.loc[j, 'review']):
+    for d in data.itertuples():
+        for sentence in sss(d.review):
             review_data.append(sentence)
-    # review_data = pd.DataFrame(review_data, columns=['review']).reset_index(drop=True)
-    # review_data = preprocessing(review_data)  # 전처리
+    # for j in range(len(data)):
+    #     for sentence in sss(data.loc[j, 'review']):
+    #         review_data.append(sentence)
     review_data_list_pre = morphs_tokenizer(review_data)  # 형태소 토큰화
     count = defaultdict(int)
     for i in range(len(review_data_list_pre)):
@@ -453,15 +430,6 @@ def keyword_in_review(temp_review, keyword):
             for key, sim_words in similar_word.items():
                 if word in sim_words and key not in result_word:
                     result_word.append(key)
-
-    # ver1
-    # for word in tokenized_review:
-    #     if word in keyword and word not in result_word:
-    #         result_word.append(word)
-    #     else:
-    #         for key, sim_words in similar_word.items():
-    #             if word in sim_words and key not in result_word:
-    #                 result_word.append(key)
     return result_word
 
 
