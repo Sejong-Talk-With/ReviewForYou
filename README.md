@@ -36,3 +36,12 @@
 | Tokenizer      | Konlpy Mecab                              |
 | 형상관리       | Git                                       |
 | 소통           | Slack / Kakao Talk                        |
+
+
+### 작품 사진
+
+<img src="/readme_image/main.PNG">
+<img src="/readme_image/리뷰요약.PNG">
+<img src="/readme_image/XAI.PNG">
+<img src="/readme_image/상품추천.PNG">
+<img src="/readme_image/상세리뷰.PNG">
