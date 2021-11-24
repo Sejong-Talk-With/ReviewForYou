@@ -37,6 +37,8 @@
 | 형상관리       | Git                                       |
 | 소통           | Slack / Kakao Talk                        |
 
+### 시연 영상
+https://www.youtube.com/watch?v=BmTeiVTbjN4
 
 ### 작품 사진
 
