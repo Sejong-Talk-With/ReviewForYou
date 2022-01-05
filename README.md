@@ -51,6 +51,6 @@ https://www.youtube.com/watch?v=BmTeiVTbjN4
 
 <img src="/readme_image/main.PNG">
 <img src="/readme_image/리뷰요약.PNG">
-<img src="/readme_image/XAI.PNG">
+<img src="/readme_image/xai_goodimg.png">
 <img src="/readme_image/상품추천.PNG">
 <img src="/readme_image/상세리뷰.PNG">
